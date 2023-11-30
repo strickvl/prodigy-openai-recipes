@@ -15,10 +15,10 @@ def make_suggester(
 ) -> OpenAISuggester:
     if "openai_api_key" not in kwargs or "openai_api_org" not in kwargs:
         api_key, api_org = get_api_credentials(model)
-        if "openai_api_key" not in kwargs:
-            kwargs["openai_api_key"] = api_key
-        if "openai_api_org" not in kwargs:
-            kwargs["openai_api_org"] = api_org
+    if "openai_api_key" not in kwargs:
+        kwargs["openai_api_key"] = api_key
+    if "openai_api_org" not in kwargs:
+        kwargs["openai_api_org"] = api_org
     if "max_examples" not in kwargs:
         kwargs["max_examples"] = 0
     if "prompt_template" not in kwargs:
@@ -28,10 +28,9 @@ def make_suggester(
     if "openai_model" not in kwargs:
         kwargs["openai_model"] = "text-davinci-003"
 
-    openai = OpenAISuggester(
+    return OpenAISuggester(
         response_parser=response_parser,
         labels=labels,
         prompt_example_class=prompt_example_class,
         **kwargs
     )
-    return openai

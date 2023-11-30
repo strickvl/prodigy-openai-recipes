@@ -32,7 +32,7 @@ def _load_template(path: Path) -> jinja2.Template:
     # I know jinja has a lot of complex file loading stuff,
     # but we're not using the inheritance etc that makes
     # that stuff worthwhile.
-    if not path.suffix == ".jinja2":
+    if path.suffix != ".jinja2":
         msg.fail(
             "The --prompt-path (-p) parameter expects a .jinja2 file.",
             exits=1,
@@ -128,9 +128,7 @@ def terms_openai_fetch(
     tic = time.time()
     template = _load_template(prompt_path)
     # The `best_of` param cannot be less than the amount we batch.
-    if best_of < n_batch:
-        best_of = n_batch
-
+    best_of = max(best_of, n_batch)
     # Start collection of terms. If we resume we also fill seed terms with file contents.
     terms = []
     if resume:

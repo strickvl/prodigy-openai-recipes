@@ -143,7 +143,7 @@ def test_one_token_per_span(
     raw_spans: List[Tuple[str, int, int]],
     filtered_spans: List[Tuple[int, int]],
 ):
-    labels = list(sorted(set(label for label, _, _1 in raw_spans)))
+    labels = list(sorted({label for label, _, _1 in raw_spans}))
     suggester = make_suggester(
         response_parser=make_ner_response_parser(labels=labels, lang="en"),
         prompt_path=DEFAULT_PROMPT_PATH,
@@ -175,9 +175,9 @@ def _get_response(text: str, labels, spans: List[Tuple[str, int, int]]) -> str:
     spans_by_label = defaultdict(list)
     for label, start, end in spans:
         spans_by_label[label].append(text[start_chars[start] : end_chars[end - 1]])
-    response_lines = []
-    for label in labels:
-        response_lines.append(f"{label}: {', '.join(spans_by_label[label])}")
+    response_lines = [
+        f"{label}: {', '.join(spans_by_label[label])}" for label in labels
+    ]
     return "\n".join(response_lines)
 
 

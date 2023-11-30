@@ -114,7 +114,7 @@ def train_ner(
     batch_size = 16
 
     args = TrainingArguments(
-        f"test-ner",
+        "test-ner",
         evaluation_strategy="epoch",
         learning_rate=1e-4,
         per_device_train_batch_size=batch_size,
@@ -122,7 +122,6 @@ def train_ner(
         num_train_epochs=20,
         weight_decay=1e-5,
         disable_tqdm=True,
-        # specify the optimizer to avoid a deprecation warning
         optim="adamw_torch",
     )
 

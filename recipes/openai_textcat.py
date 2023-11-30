@@ -174,8 +174,7 @@ def textcat_openai_correct(
         openai.add_example(eg)
     if max_examples >= 1:
         db = prodigy.components.db.connect()
-        db_examples = db.get_dataset(dataset)
-        if db_examples:
+        if db_examples := db.get_dataset(dataset):
             for eg in db_examples:
                 if PromptExample.is_flagged(eg):
                     openai.add_example(PromptExample.from_prodigy(eg, openai.labels))

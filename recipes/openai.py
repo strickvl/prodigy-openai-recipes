@@ -342,7 +342,7 @@ def load_template(path: Path) -> jinja2.Template:
     # I know jinja has a lot of complex file loading stuff,
     # but we're not using the inheritance etc that makes
     # that stuff worthwhile.
-    if not path.suffix == ".jinja2":
+    if path.suffix != ".jinja2":
         msg.fail(
             "The --prompt-path (-p) parameter expects a .jinja2 file.",
             exits=1,
@@ -387,8 +387,7 @@ def read_yaml_examples(
     if not isinstance(data, list):
         msg.fail("Cannot interpret prompt examples from yaml", exits=True)
     assert isinstance(data, list)
-    output = [example_class(**eg) for eg in data]
-    return output
+    return [example_class(**eg) for eg in data]
 
 
 def batch_sequence(items: Iterable[_ItemT], batch_size: int) -> Iterable[List[_ItemT]]:

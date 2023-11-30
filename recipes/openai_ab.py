@@ -115,31 +115,32 @@ class OpenAIPromptAB:
         # Handle edge case when both are equal:
         nr1, nr2 = counts.most_common(2)
         if nr1[1] == nr2[1]:
-            msg.good(f"It's a draw!")
+            msg.good("It's a draw!")
         else:
             pref, _ = nr1
             msg.good(f"You preferred {pref}")
-        rows = [(name, count) for name, count in counts.most_common()]
+        rows = list(counts.most_common())
         msg.table(rows, aligns=("l", "r"))
 
     def _get_response_batch(self, inputs: List[PromptInput]) -> List[Dict[str, str]]:
         name1, name2 = self._choose_rivals()
         prompts = []
         for input_ in inputs:
-            prompts.append(self._get_prompt(name1, input_.prompt_args))
-            prompts.append(self._get_prompt(name2, input_.prompt_args))
+            prompts.extend(
+                (
+                    self._get_prompt(name1, input_.prompt_args),
+                    self._get_prompt(name2, input_.prompt_args),
+                )
+            )
         if self.verbose:
             for prompt in prompts:
                 rich.print(Panel(prompt, title="Prompt to OpenAI"))
         responses = self._get_responses(prompts)
         assert len(responses) == len(inputs) * 2
-        output = []
-        # Pair out the responses. There's a fancy
-        # zip way to do this but I think that's less
-        # readable
-        for i in range(0, len(responses), 2):
-            output.append({name1: responses[i], name2: responses[i + 1]})
-        return output
+        return [
+            {name1: responses[i], name2: responses[i + 1]}
+            for i in range(0, len(responses), 2)
+        ]
 
     def _choose_rivals(self) -> Tuple[str, str]:
         assert len(self.prompts) == 2
@@ -318,7 +319,7 @@ def _load_template(path: Path) -> jinja2.Template:
     # I know jinja has a lot of complex file loading stuff,
     # but we're not using the inheritance etc that makes
     # that stuff worthwhile.
-    if not path.suffix == ".jinja2":
+    if path.suffix != ".jinja2":
         msg.fail(
             f"The parameter expects a .jinja2 file. Received path='{path}'",
             exits=1,
